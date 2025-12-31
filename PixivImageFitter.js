@@ -1,44 +1,66 @@
 (function() {
   'use strict';
-  // 拡大画像のimg要素セレクタ
   const sel = 'img[style*="z-index"], img[data-testid="illust-zoom-viewer-image"], div[role="presentation"] img';
-
-  // 画像を画面サイズにフィットさせる関数
   const fit = () => {
-    document.querySelectorAll(sel).forEach(img => {
-      if (!img.dataset.fit) {
-        Object.assign(img.style, {
-          maxWidth: '100vw',
-          maxHeight: '100vh',
-          width: 'auto',
-          height: 'auto',
-          display: 'block',
-          margin: 'auto'
-        });
-        img.dataset.fit = 1;
+    const images = document.querySelectorAll(sel);
+    if (images.length === 0) return;
+    const isZoomMode = document.documentElement.style.overflow === 'hidden';
+    if (!isZoomMode) {
+      images.forEach(img => {
+        if (img.dataset.fit) {
+          img.style.removeProperty('max-width');
+          img.style.removeProperty('max-height');
+          img.style.removeProperty('width');
+          img.style.removeProperty('height');
+          img.style.removeProperty('display');
+          img.style.removeProperty('margin');
+          img.style.removeProperty('object-fit');
+          img.style.removeProperty('position');
+          img.style.removeProperty('top');
+          img.style.removeProperty('left');
+          img.style.removeProperty('right');
+          img.style.removeProperty('bottom');
+          delete img.dataset.fit;
+        }
+      });
+      return;
+    }
+    images.forEach(img => {
+      if (img.closest('.gtm-medium-work-expanded-view')) {
+        return;
       }
+      if (img.closest('a')) {
+        return;
+      }
+      img.style.setProperty('max-width', '100vw', 'important');
+      img.style.setProperty('max-height', '100vh', 'important');
+      img.style.setProperty('width', 'auto', 'important');
+      img.style.setProperty('height', 'auto', 'important');
+      img.style.setProperty('display', 'block', 'important');
+      img.style.setProperty('margin', 'auto', 'important');
+      img.style.setProperty('object-fit', 'contain', 'important');
+      img.dataset.fit = 1;
     });
-    let ov = document.querySelector('[data-testid="illust-zoom-viewer"], [class*="modal"], [class*="Overlay"]');
-    if (ov) ov.style.overflow = 'auto';
+    let ov = document.querySelector('[data-testid="illust-zoom-viewer"]');
+    if (ov) {
+      ov.style.setProperty('overflow', 'auto', 'important');
+    }
   };
-
-  // enabled状態を参照して処理を実行
   function init() {
     chrome.storage.sync.get('enabled', data => {
-      if (data.enabled !== false) { // デフォルトはON
-        new MutationObserver(fit).observe(document.body, {childList:true,subtree:true});
-        window.addEventListener('load', fit);
+      if (data.enabled !== false) {
+        const observer = new MutationObserver(fit);
+        observer.observe(document.body, { childList: true, subtree: true });
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['style'] });
+        window.addEventListener('resize', fit);
         fit();
       }
     });
   }
-
-  // 設定変更時にページをリロードして状態を反映
   chrome.storage.onChanged.addListener((changes, area) => {
     if (area === 'sync' && 'enabled' in changes) {
       location.reload();
     }
   });
-
   init();
 })();

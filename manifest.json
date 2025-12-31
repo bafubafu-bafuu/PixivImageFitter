@@ -3,7 +3,7 @@
 
   "manifest_version": 3,
   "name": "Pixiv Image Fitter",
-  "version": "1.0",
+  "version": "1.2.1",
   "description": "Pixivの画像拡大表示を画面サイズに自動でフィットさせる拡張機能",
   "icons": {
     "128": "mdi_resize.png"
