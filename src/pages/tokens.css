@@ -1,0 +1,22 @@
+:root {
+  color-scheme: light dark;
+  --surface: #ffffff;
+  --ink: #202124;
+  --muted: #5f6368;
+  --accent: #1a73e8;
+  --wash: #f5f5f5;
+  --line: #dadce0;
+  --danger: #b3261e;
+  --focus: Highlight;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #202124;
+    --ink: #e8eaed;
+    --muted: #bdc1c6;
+    --accent: #8ab4f8;
+    --wash: #292a2d;
+    --line: #5f6368;
+    --danger: #f28b82;
+  }
+}
